@@ -176,7 +176,7 @@ if video:
 embed = {
     "title": "This Week's Random Patreon Post",
     "url": link,
-    "color":  F89915,  
+    "color": 16068023,  
     "fields": fields,
     "footer": {
         "text": "VGCC Patreon Archive"

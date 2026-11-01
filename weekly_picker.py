@@ -8,8 +8,11 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 DATA_URL = (
-    "https://sambiggs59-lgtm.github.io/vgcc/"
-    "PatreonContent/patreoncontent.json"
+    "https://sambiggs59-lgtm.github.io/vgcc/",
+    "patreonContent_cvg.json",
+    "patreonContent_offTopic.json",
+    "patreonContent_we3.json",
+    "patreonContent_acceptableInThe90s.json",
 )
 
 STATE_FILE = Path("used_links.json")

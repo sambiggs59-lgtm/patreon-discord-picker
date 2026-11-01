@@ -176,7 +176,7 @@ if video:
 embed = {
     "title": "This Week's Random Patreon Post",
     "url": link,
-    "color": 5793266,  # Discord blurple
+    "color":  #F89915,  
     "fields": fields,
     "footer": {
         "text": "VGCC Patreon Archive"

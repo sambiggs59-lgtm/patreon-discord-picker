@@ -221,6 +221,10 @@ if image_url:
     embed["image"] = {
         "url": image_url
     }
+    else:
+    embed["thumbnail"] = {
+        "url": "https://c5.patreon.com/external/logo/downloads_logomark_color_on_white.png"
+    }
 
 # Send to Discord
 discord_response = requests.post(

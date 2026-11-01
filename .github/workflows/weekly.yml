@@ -37,6 +37,7 @@ jobs:
       - name: Pick and post Patreon link
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          MANUAL_RUN: ${{ github.event_name == 'workflow_dispatch' }}
         run: python weekly_picker.py
 
       - name: Save used links

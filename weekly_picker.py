@@ -119,6 +119,9 @@ video = chosen.get("videoLink")
 
 # Build Discord embed
 
+message = (
+     f"{link}\n"
+
 fields = [
     {
         "name": "Title:",

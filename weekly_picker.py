@@ -18,7 +18,9 @@ WEBHOOK_URL = os.environ["DISCORD_WEBHOOK"]
 # Check UK time
 now = datetime.now(ZoneInfo("Europe/London"))
 
-if now.weekday() != 6 or now.hour != 9:
+manual_run = os.getenv("MANUAL_RUN", "").lower() == "true"
+
+if not manual_run and (now.weekday() != 6 or now.hour != 9):
     print(f"Skipping run: UK time is {now}")
     raise SystemExit(0)
 

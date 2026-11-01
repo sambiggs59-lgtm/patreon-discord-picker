@@ -66,6 +66,7 @@ chosen = random.choice(unused)
 title = chosen.get("title", "Untitled")
 series = chosen.get("series", "Unknown")
 date = chosen.get("date", "Unknown")
+tier = chosen.get("tier", "Unknown")
 link = chosen["patreonLink"]
 
 # Prepare Discord message
@@ -74,6 +75,7 @@ message = (
     f"**Title:** {title}\n"
     f"**Series:** {series}\n"
     f"**Date:** {date}\n\n"
+    f"**Patreon Tier:** {tier}\n\n"
     f"🔗 {link}"
 )
 

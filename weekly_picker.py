@@ -8,6 +8,8 @@ from pathlib import Path
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+from bs4 import BeautifulSoup
+
 # Patreon content source
 BASE_URL = (
     "https://sambiggs59-lgtm.github.io/vgcc/"
@@ -37,6 +39,43 @@ if not manual_run and (now.weekday() != 6 or now.hour != 9):
 
 def load_patreon_posts():
     """Download and combine the four Patreon content files."""
+
+    def get_preview_image(url):
+    """Extract og:image from a Patreon page."""
+
+    try:
+        response = requests.get(
+            url,
+            timeout=30,
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36"
+                )
+            }
+        )
+
+        response.raise_for_status()
+
+        soup = BeautifulSoup(
+            response.text,
+            "html.parser"
+        )
+
+        og_image = soup.find(
+            "meta",
+            property="og:image"
+        )
+
+        if og_image:
+            return og_image.get("content")
+
+    except Exception as exc:
+        print(
+            f"Could not fetch preview image for {url}: {exc}"
+        )
+
+    return None
 
     posts = {}
 
@@ -116,12 +155,10 @@ link = chosen["patreonLink"]
 audio = chosen.get("audioLink")
 video = chosen.get("videoLink")
 
+image_url = get_preview_image(link)
+
 
 # Build Discord embed
-
-message = (
-     f"{link}\n"
-)
 
 fields = [
     {
@@ -179,6 +216,11 @@ embed = {
     },
     "timestamp": datetime.utcnow().isoformat() + "Z",
 }
+
+if image_url:
+    embed["image"] = {
+        "url": image_url
+    }
 
 # Send to Discord
 discord_response = requests.post(

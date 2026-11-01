@@ -75,7 +75,7 @@ message = (
     f"**Title:** {title}\n"
     f"**Series:** {series}\n"
     f"**Date:** {date}\n\n"
-    f"**Patreon Tier: @** {tier}\n\n **and above**"
+    f"**Patreon Tier: @**{tier}\n\n**and above**"
     f"🔗 {link}"
 )
 

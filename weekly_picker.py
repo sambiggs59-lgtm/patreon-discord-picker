@@ -71,11 +71,11 @@ link = chosen["patreonLink"]
 
 # Prepare Discord message
 message = (
-    "🎲 **This Week's Random Patreon Post**\n\n"
+    "**This Week's Random Patreon Post**\n\n"
     f"**Title:** {title}\n"
     f"**Series:** {series}\n"
     f"**Date:** {date}\n\n"
-    f"**Patreon Tier:** {tier}\n\n"
+    f"**Patreon Tier: @** {tier}\n\n **and above**"
     f"🔗 {link}"
 )
 

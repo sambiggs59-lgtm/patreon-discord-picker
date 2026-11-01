@@ -130,17 +130,17 @@ if isinstance(title_image, str) and title_image:
 
 fields = [
     {
-        "name": "Title",
+        "name": "**Title:**",
         "value": title,
         "inline": False,
     },
     {
-        "name": "Series",
+        "name": "**Series:**",
         "value": series,
         "inline": True,
     },
     {
-        "name": "Date",
+        "name": "**Date:**",
         "value": date,
         "inline": True,
     },
@@ -149,19 +149,11 @@ fields = [
 if tier:
     fields.append(
         {
-            "name": "Patreon Tier",
+            "name": "**Patreon Tier:**",
             "value": f"{tier} and above",
             "inline": True,
         }
     )
-
-fields.append(
-    {
-        "name": "Patreon Post",
-        "value": link,
-        "inline": False,
-    }
-)
 
 if audio:
     fields.append(
@@ -182,7 +174,7 @@ if video:
     )
 
 embed = {
-    "title": "🎲 This Week's Random Patreon Post",
+    "title": "This Week's Random Patreon Post",
     "url": link,
     "color": 5793266,  # Discord blurple
     "fields": fields,

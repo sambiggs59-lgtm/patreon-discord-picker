@@ -121,6 +121,7 @@ video = chosen.get("videoLink")
 
 message = (
      f"{link}\n"
+)
 
 fields = [
     {

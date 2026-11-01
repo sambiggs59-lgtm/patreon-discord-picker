@@ -1,4 +1,3 @@
-
 import json
 import os
 import random
@@ -37,12 +36,8 @@ if not manual_run and (now.weekday() != 6 or now.hour != 9):
     raise SystemExit(0)
 
 
-def load_patreon_posts():
-    """Download and combine the four Patreon content files."""
-
-    def get_preview_image(url):
+def get_preview_image(url):
     """Extract og:image from a Patreon page."""
-
     try:
         response = requests.get(
             url,
@@ -52,36 +47,28 @@ def load_patreon_posts():
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                     "AppleWebKit/537.36"
                 )
-            }
+            },
         )
-
         response.raise_for_status()
 
-        soup = BeautifulSoup(
-            response.text,
-            "html.parser"
-        )
-
-        og_image = soup.find(
-            "meta",
-            property="og:image"
-        )
+        soup = BeautifulSoup(response.text, "html.parser")
+        og_image = soup.find("meta", property="og:image")
 
         if og_image:
             return og_image.get("content")
 
     except Exception as exc:
-        print(
-            f"Could not fetch preview image for {url}: {exc}"
-        )
+        print(f"Could not fetch preview image for {url}: {exc}")
 
     return None
 
+
+def load_patreon_posts():
+    """Download and combine the four Patreon content files."""
     posts = {}
 
     for filename in DATA_FILES:
         url = BASE_URL + filename
-
         print(f"Downloading {filename}...")
 
         response = requests.get(url, timeout=30)
@@ -90,20 +77,14 @@ def load_patreon_posts():
         items = response.json()
 
         if not isinstance(items, list):
-            raise ValueError(
-                f"Unexpected JSON format in {filename}"
-            )
+            raise ValueError(f"Unexpected JSON format in {filename}")
 
         for item in items:
             if not isinstance(item, dict):
                 continue
 
             link = item.get("patreonLink")
-
-            if (
-                isinstance(link, str)
-                and link.startswith("https://www.patreon.com/")
-            ):
+            if isinstance(link, str) and link.startswith("https://www.patreon.com/"):
                 posts[link] = item
 
         print(f"Loaded {filename}")
@@ -119,7 +100,6 @@ if not posts:
 
 print(f"Total unique Patreon posts: {len(posts)}")
 
-
 # Load posting history
 if STATE_FILE.exists():
     state = json.loads(STATE_FILE.read_text())
@@ -128,20 +108,14 @@ else:
 
 used = set(state.get("used", []))
 
-
 # Find posts that haven't been shared
-unused = [
-    post for post in posts
-    if post["patreonLink"] not in used
-]
-
+unused = [post for post in posts if post["patreonLink"] not in used]
 
 # Start a new cycle if every post has been shared
 if not unused:
     print("All posts used. Starting a new cycle.")
     used.clear()
     unused = posts.copy()
-
 
 # Pick a random post
 chosen = random.choice(unused)
@@ -157,71 +131,34 @@ video = chosen.get("videoLink")
 
 image_url = get_preview_image(link)
 
-
 # Build Discord embed
-
 fields = [
-    {
-        "name": "Title:",
-        "value": title,
-        "inline": False,
-    },
-    {
-        "name": "Series:",
-        "value": series,
-        "inline": True,
-    },
-    {
-        "name": "Date:",
-        "value": date,
-        "inline": True,
-    }
+    {"name": "Title:", "value": title, "inline": False},
+    {"name": "Series:", "value": series, "inline": True},
+    {"name": "Date:", "value": date, "inline": True},
 ]
 
 if tier:
-    fields.append(
-        {
-            "name": "Patreon Tier:",
-            "value": f"{tier} and above",
-            "inline": True,
-        }
-    )
-
+    fields.append({"name": "Patreon Tier:", "value": f"{tier} and above", "inline": True})
 
 if audio:
-    fields.append(
-        {
-            "name": "🎧 Audio",
-            "value": audio,
-            "inline": False,
-        }
-    )
+    fields.append({"name": "🎧 Audio", "value": audio, "inline": False})
 
 if video:
-    fields.append(
-        {
-            "name": "🎬 Video",
-            "value": video,
-            "inline": False,
-        }
-    )
+    fields.append({"name": "🎬 Video", "value": video, "inline": False})
 
 embed = {
     "title": "🎲 This Week's Random Patreon Post",
     "url": link,
-    "color": 5793266,  # Discord blurple
+    "color": 5793266,
     "fields": fields,
-    "footer": {
-        "text": "VGCC Patreon Archive"
-    },
+    "footer": {"text": "VGCC Patreon Archive"},
     "timestamp": datetime.utcnow().isoformat() + "Z",
 }
 
 if image_url:
-    embed["image"] = {
-        "url": image_url
-    }
-    else:
+    embed["image"] = {"url": image_url}
+else:
     embed["thumbnail"] = {
         "url": "https://c5.patreon.com/external/logo/downloads_logomark_color_on_white.png"
     }
@@ -238,12 +175,8 @@ discord_response = requests.post(
 
 discord_response.raise_for_status()
 
-
 # Save history after successful posting
 used.add(link)
-
-STATE_FILE.write_text(
-    json.dumps({"used": sorted(used)}, indent=2)
-)
+STATE_FILE.write_text(json.dumps({"used": sorted(used)}, indent=2))
 
 print(f"Successfully posted: {title}")

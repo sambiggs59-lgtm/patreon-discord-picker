@@ -3,18 +3,25 @@ import json
 import os
 import random
 import requests
+
 from pathlib import Path
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-DATA_URL = (
-    "https://sambiggs59-lgtm.github.io/vgcc/",
+# Patreon content source
+BASE_URL = (
+    "https://sambiggs59-lgtm.github.io/vgcc/"
+    "PatreonContent/"
+)
+
+DATA_FILES = [
     "patreonContent_cvg.json",
     "patreonContent_offTopic.json",
     "patreonContent_we3.json",
     "patreonContent_acceptableInThe90s.json",
-)
+]
 
+# Files and configuration
 STATE_FILE = Path("used_links.json")
 WEBHOOK_URL = os.environ["DISCORD_WEBHOOK"]
 
@@ -27,22 +34,52 @@ if not manual_run and (now.weekday() != 6 or now.hour != 9):
     print(f"Skipping run: UK time is {now}")
     raise SystemExit(0)
 
-# Download the latest Patreon content
-response = requests.get(DATA_URL, timeout=30)
-response.raise_for_status()
-items = response.json()
 
-# Remove duplicate links
-posts = {}
-for item in items:
-    link = item.get("patreonLink")
-    if link and link.startswith("https://www.patreon.com/"):
-        posts[link] = item
+def load_patreon_posts():
+    """Download and combine the four Patreon content files."""
 
-posts = list(posts.values())
+    posts = {}
+
+    for filename in DATA_FILES:
+        url = BASE_URL + filename
+
+        print(f"Downloading {filename}...")
+
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
+
+        items = response.json()
+
+        if not isinstance(items, list):
+            raise ValueError(
+                f"Unexpected JSON format in {filename}"
+            )
+
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+
+            link = item.get("patreonLink")
+
+            if (
+                isinstance(link, str)
+                and link.startswith("https://www.patreon.com/")
+            ):
+                posts[link] = item
+
+        print(f"Loaded {filename}")
+
+    return list(posts.values())
+
+
+# Download all Patreon posts
+posts = load_patreon_posts()
 
 if not posts:
     raise RuntimeError("No valid Patreon posts found.")
+
+print(f"Total unique Patreon posts: {len(posts)}")
+
 
 # Load posting history
 if STATE_FILE.exists():
@@ -52,35 +89,53 @@ else:
 
 used = set(state.get("used", []))
 
-# Select an unused post
+
+# Find posts that haven't been shared
 unused = [
     post for post in posts
     if post["patreonLink"] not in used
 ]
 
-# Start a new cycle when necessary
+
+# Start a new cycle if every post has been shared
 if not unused:
     print("All posts used. Starting a new cycle.")
     used.clear()
     unused = posts.copy()
 
+
+# Pick a random post
 chosen = random.choice(unused)
 
-title = chosen.get("title", "Untitled")
-series = chosen.get("series", "Unknown")
-date = chosen.get("date", "Unknown")
-tier = chosen.get("tier", "Unknown")
+title = chosen.get("title") or "Untitled"
+series = chosen.get("series") or "Unknown"
+date = chosen.get("date") or "Unknown"
+tier = chosen.get("tier")
 link = chosen["patreonLink"]
 
-# Prepare Discord message
+audio = chosen.get("audioLink")
+video = chosen.get("videoLink")
+
+
+# Build Discord message
 message = (
     "**This Week's Random Patreon Post**\n\n"
     f"**Title:** {title}\n"
     f"**Series:** {series}\n"
-    f"**Date:** {date}\n\n"
-    f"**Patreon Tier: @{tier}\n\n and above**"
-    f"🔗 {link}"
+    f"**Date:** {date}\n"
 )
+
+if tier:
+    message += f"**Patreon Tier:** {tier} and above\n"
+
+message += f"\n🔗 **Patreon:** {link}"
+
+if audio:
+    message += f"\n🎧 **Audio:** {audio}"
+
+if video:
+    message += f"\n🎬 **Video:** {video}"
+
 
 # Send to Discord
 discord_response = requests.post(
@@ -88,9 +143,11 @@ discord_response = requests.post(
     json={"content": message},
     timeout=30
 )
+
 discord_response.raise_for_status()
 
-# Save history only after successful posting
+
+# Save history after successful posting
 used.add(link)
 
 STATE_FILE.write_text(

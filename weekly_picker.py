@@ -117,26 +117,80 @@ audio = chosen.get("audioLink")
 video = chosen.get("videoLink")
 
 
-# Build Discord message
-message = (
-    "**This Week's Random Patreon Post**\n\n"
-    f"**Title:** {title}\n"
-    f"**Series:** {series}\n"
-    f"**Date:** {date}\n"
-)
+# Build Discord embed
+
+fields = [
+    {
+        "name": "📖 Title",
+        "value": title,
+        "inline": False,
+    },
+    {
+        "name": "🎙️ Series",
+        "value": series,
+        "inline": True,
+    },
+    {
+        "name": "📅 Date",
+        "value": date,
+        "inline": True,
+    }
+]
 
 if tier:
-    message += f"**Patreon Tier:** {tier} and above\n"
+    fields.append(
+        {
+            "name": "💎 Patreon Tier",
+            "value": f"{tier} and above",
+            "inline": True,
+        }
+    )
 
-if audio: message += f"\n🎧 Audio: {audio}"
+fields.append(
+    {
+        "name": "🔗 Patreon Post",
+        "value": link,
+        "inline": False,
+    }
+)
 
-if video: message += f"\n🎬 Video: {video}"
+if audio:
+    fields.append(
+        {
+            "name": "🎧 Audio",
+            "value": audio,
+            "inline": False,
+        }
+    )
+
+if video:
+    fields.append(
+        {
+            "name": "🎬 Video",
+            "value": video,
+            "inline": False,
+        }
+    )
+
+embed = {
+    "title": "🎲 This Week's Random Patreon Post",
+    "url": link,
+    "color": 5793266,  # Discord blurple
+    "fields": fields,
+    "footer": {
+        "text": "VGCC Patreon Archive"
+    },
+    "timestamp": datetime.utcnow().isoformat() + "Z",
+}
 
 # Send to Discord
 discord_response = requests.post(
     WEBHOOK_URL,
-    json={"content": message},
-    timeout=30
+    json={
+        "username": "VGCC Random Picker",
+        "embeds": [embed],
+    },
+    timeout=30,
 )
 
 discord_response.raise_for_status()

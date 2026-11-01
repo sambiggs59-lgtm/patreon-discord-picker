@@ -121,17 +121,17 @@ video = chosen.get("videoLink")
 
 fields = [
     {
-        "name": "📖 Title",
+        "name": "Title:",
         "value": title,
         "inline": False,
     },
     {
-        "name": "🎙️ Series",
+        "name": "Series:",
         "value": series,
         "inline": True,
     },
     {
-        "name": "📅 Date",
+        "name": "Date:",
         "value": date,
         "inline": True,
     }
@@ -140,19 +140,12 @@ fields = [
 if tier:
     fields.append(
         {
-            "name": "💎 Patreon Tier",
+            "name": "Patreon Tier:",
             "value": f"{tier} and above",
             "inline": True,
         }
     )
 
-fields.append(
-    {
-        "name": "🔗 Patreon Post",
-        "value": link,
-        "inline": False,
-    }
-)
 
 if audio:
     fields.append(
@@ -187,7 +180,7 @@ embed = {
 discord_response = requests.post(
     WEBHOOK_URL,
     json={
-        "username": "VGCC Random Picker",
+        "username": "Weekly Patreon Picker",
         "embeds": [embed],
     },
     timeout=30,

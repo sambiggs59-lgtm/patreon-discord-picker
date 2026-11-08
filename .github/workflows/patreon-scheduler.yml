@@ -3,7 +3,7 @@ name: Patreon Scheduler Test
 
 on:
   schedule:
-    - cron: '13,28,43,58 * * * *'
+    - cron: '13,28,49,53 * * * *'
   workflow_dispatch:
 
 jobs:

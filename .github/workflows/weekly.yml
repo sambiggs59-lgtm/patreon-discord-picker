@@ -1,11 +1,9 @@
-
 name: Weekly Patreon Discord Post
 
 on:
   schedule:
     - cron: '*/5 * * * *'
       timezone: 'Europe/London'
-
   workflow_dispatch:
 
 permissions:

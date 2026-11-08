@@ -12,3 +12,5 @@ if audio:
 
 if video:
     message += f"\n🎬 **Video:** {video}"
+
+"https://www.patreon.com/VideoGamesChronicle/posts/chatting-vintage-127767500?collection=805454"

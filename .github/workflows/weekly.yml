@@ -3,8 +3,8 @@ name: Weekly Patreon Discord Post
 
 on:
   schedule:
-    # 10 AM UK during Greenwich Mean Time
     - cron: '0 10 * * 0'
+      timezone: 'Europe/London'
 
   workflow_dispatch:
 

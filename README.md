@@ -14,3 +14,50 @@ if video:
     message += f"\n🎬 **Video:** {video}"
 
 "https://www.patreon.com/VideoGamesChronicle/posts/chatting-vintage-127767500?collection=805454"
+
+name: Weekly Patreon Discord Post
+
+on:
+  schedule:
+    - cron: '7,17,27,37,47,57 * * * *'
+      timezone: 'Europe/London'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-patreon-post
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Pick and post Patreon link
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          MANUAL_RUN: ${{ github.event_name == 'workflow_dispatch' }}
+        run: python weekly_picker.py
+
+      - name: Save used links
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add used_links.json
+          git diff --cached --quiet || (
+            git commit -m "Update used Patreon links" &&
+            git push
+          )

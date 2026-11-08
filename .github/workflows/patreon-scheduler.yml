@@ -2,7 +2,7 @@ name: Patreon Scheduler Test
 
 on:
   schedule:
-    - cron: '23 * * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
   push:
     branches:
@@ -13,4 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Confirm execution
-        run: echo "Workflow triggered successfully!"
+        run: |
+          echo "Scheduled workflow is alive!"
+          echo "Event: ${{ github.event_name }}"
+          date -u

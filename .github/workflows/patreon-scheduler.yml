@@ -1,0 +1,15 @@
+name: Patreon Scheduler Test
+
+on:
+  schedule:
+    - cron: '51 * * * *'
+  workflow_dispatch:
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm scheduled execution
+        run: echo "Scheduled workflow triggered successfully!"
+
+

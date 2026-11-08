@@ -31,8 +31,8 @@ now = datetime.now(ZoneInfo("Europe/London"))
 
 manual_run = os.getenv("MANUAL_RUN", "").lower() == "true"
 
-if not manual_run and (now.weekday() != 6 or now.hour != 9):
-    print(f"Skipping run: UK time is {now}")
+if not manual_run and now.weekday() != 6:
+    print(f"Skipping run: Not Sunday. UK time is {now}")
     raise SystemExit(0)
 
 

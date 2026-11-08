@@ -2,7 +2,7 @@ name: Patreon Scheduler Test
 
 on:
   schedule:
-    - cron: '51 * * * *'
+    - cron: '23 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -11,5 +11,3 @@ jobs:
     steps:
       - name: Confirm scheduled execution
         run: echo "Scheduled workflow triggered successfully!"
-
-

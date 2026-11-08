@@ -31,10 +31,6 @@ now = datetime.now(ZoneInfo("Europe/London"))
 
 manual_run = os.getenv("MANUAL_RUN", "").lower() == "true"
 
-if not manual_run and now.weekday() != 6:
-    print(f"Skipping run: Not Sunday. UK time is {now}")
-    raise SystemExit(0)
-
 
 def load_patreon_posts():
     """Download and combine the Patreon content files."""

@@ -4,10 +4,13 @@ on:
   schedule:
     - cron: '23 * * * *'
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   heartbeat:
     runs-on: ubuntu-latest
     steps:
-      - name: Confirm scheduled execution
-        run: echo "Scheduled workflow triggered successfully!"
+      - name: Confirm execution
+        run: echo "Workflow triggered successfully!"

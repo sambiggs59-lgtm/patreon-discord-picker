@@ -1,39 +1,46 @@
-name: Weekly Patreon Discord Picker
+name: Weekly Patreon Discord Post
 
 on:
-  repository_dispatch:
-    types: [trigger-weekly-picker]
-  workflow_dispatch: # Keeps a manual "Run workflow" button in GitHub for testing
+  schedule:
+    - cron: '0 10 * * 0'
+      timezone: 'Europe/London'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-patreon-post
+  cancel-in-progress: false
 
 jobs:
-  run-script:
+  post:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-          cache: 'pip'
+          python-version: '3.12'
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        run: pip install -r requirements.txt
 
-      - name: Run picker script
+      - name: Pick and post Patreon link
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }} # Adjust to match your exact secret name
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          MANUAL_RUN: ${{ github.event_name == 'workflow_dispatch' }}
         run: python weekly_picker.py
 
-      - name: Commit and push updated used_links.json
+      - name: Save used links
         run: |
-          git config --local user.email "github-actions[bot]@://github.com"
-          git config --local user.name "github-actions[bot]"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add used_links.json
-          # Only commit and push if the file actually changed
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Automated update of used_links.json [skip ci]" && git push)
+          git diff --cached --quiet || (
+            git commit -m "Update used Patreon links" &&
+            git push
+          )

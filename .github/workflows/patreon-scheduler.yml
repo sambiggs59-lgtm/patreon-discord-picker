@@ -1,9 +1,6 @@
 name: Weekly Patreon Discord Post
 
 on:
-  schedule:
-    - cron: '47 9 * * *'
-      timezone: 'Europe/London'
   workflow_dispatch:
 
 permissions:
@@ -18,6 +15,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      - name: Run task
+        run: echo "Triggered by cron-job.org"
+    
       - name: Checkout repository
         uses: actions/checkout@v4
 
